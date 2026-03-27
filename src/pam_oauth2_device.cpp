@@ -418,6 +418,20 @@ bool is_authorized(Config const &config,
         }
     }
 
+    // Also try to authorize against local config using remote group membership
+    for(auto const &group : userinfo.groups())
+    {
+        auto group_it = config.usermap.find(group);
+        if(group_it != config.usermap.cend())
+        {
+            if(group_it->second.find(username_local) != group_it->second.cend())
+            {
+                logger.log(pam_oauth2_log::log_level_t::INFO, "usermap: %s is authorised via group %s\n", username_local.c_str(), group.c_str());
+                return true;
+            }
+        }
+    }
+
     // Try to authorize against LDAP
     if (!config.ldap_host.empty())
     {
