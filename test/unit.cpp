@@ -128,6 +128,12 @@ EXPECT_TRUE(is_authorized_local(ui, "fred"));
 // local map test: remote name is not in list
 Userinfo ui2{"0123456789abcdef", "barney.test", "barney"};
 EXPECT_TRUE(!is_authorized_local(ui2, "barney"));
+// group map test: user is in group "bleps" which is a key in the usermap, local name matches
+EXPECT_TRUE(is_authorized_local(ui, "alice"));
+// group map test: user is in group "bleps" but local name is not in the allowed set for that group
+EXPECT_TRUE(!is_authorized_local(ui, "gnumpf"));
+// group map test: user2 has no groups present in the usermap, not authorized by group
+EXPECT_TRUE(!is_authorized_local(ui2, "alice"));
 }
 
 
@@ -183,6 +189,9 @@ make_dummy_config(ConfigSection section, Userinfo const &ui)
 	    std::set<std::string> wilma{"wilma", "betty", "blaps"};
 	    cf.usermap.insert(std::pair<std::string,std::set<std::string>>{"fred.test", fred});
 	    cf.usermap.insert(std::pair<std::string,std::set<std::string>>{"wilma.test", wilma});
+	    // group-based entries: group name as key instead of remote username
+	    std::set<std::string> bleps_group{"alice", "trudy"};
+	    cf.usermap.insert(std::pair<std::string,std::set<std::string>>{"bleps", bleps_group});
 	    break;
 	// no default
     }

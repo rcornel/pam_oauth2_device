@@ -38,7 +38,30 @@ Bypass is available in two flavours, one using an LDAP callout and the other usi
 In order to use the bypass feature, there must be other authentication/authorisation modules in the PAM configuration.
 If not, login will fail.
 
-### Bypass configuration
+## Authorising by Remote Group
+
+The `users` section of the configuration file maps either a **remote username** or a **remote group name** to an array
+of permitted local usernames.  Any authenticated user whose OAuth2 userinfo includes a group that matches a key in the
+`users` section will be authorised as any of the listed local usernames.
+
+For example:
+
+```json
+"users": {
+  "iris-users": ["alice", "bob"],
+  "remote1@example.com": ["znap"]
+}
+```
+
+Here, any user who is a member of the remote group `iris-users` will be permitted to log in as either `alice` or `bob`.
+The entry `remote1@example.com` still works as a direct remote-username mapping.  Both forms can coexist in the same
+`users` section.
+
+Note that there is no way to distinguish a remote username from a remote group name in the configuration; the module
+first checks whether the key matches the user's remote username and, if not, checks whether the key matches any of the
+user's remote group memberships.
+
+## Bypass Configuration
 
 Currently there are two methods of bypassing the module.
 

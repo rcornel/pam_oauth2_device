@@ -34,6 +34,9 @@ public:
     std::string sub() const { return sub_; }
     std::string username() const { return username_; }
 
+    //! Get the userinfo groups (sorted alphabetically)
+    std::vector<std::string> const &groups() const { return groups_; }
+
     //! Check if a given group is part of the userinfo groups
     bool is_member(std::string const &group) const;
 

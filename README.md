@@ -219,7 +219,7 @@ This part of the module functionality carries a lot of legacy stuff; see the Aut
   attribute set to the empty string is equivalent to it being absent.
 5 The service name is a string, which should name a group
 6 The 'cloud' section implements a callout to a server to fetch a group membership file
-7 The 'users' section provides mappings from the username attribute (selected with username\_attribute) to a local user id.
+7 The 'users' section provides mappings from either the remote username (selected with username\_attribute) or a remote group name to a local user id.
 
 ### Bypass
 
@@ -269,7 +269,17 @@ If Fred's remote username were `fred_fleeps` then it *would* match the local use
 
 If Fred is not authorised through  the cloud or group sections, either because the check failed or they were not enabled, then a configured usermap is consulted.  This is written straight into the configuration file (it should probably be in its own file at some point), so would be suitable only for a smallish number of users.
 
-This usermap is in the **users* section which expects a JSON object mapping the *remote* username to an array of permissible local usernames. Thus, the same user could have multiple local logins using this method.  If the local username is found here, Fred is considered authorised.  No suffix is used in this section.
+This usermap is in the **users** section which expects a JSON object mapping either the *remote* username or a *remote group name* to an array of permissible local usernames. Thus, the same user could have multiple local logins using this method.  If the local username is found here (either via direct username match or via membership in a matching group), Fred is considered authorised.  No suffix is used in this section.
+
+For example, if the userinfo contains the group `iris` and the `users` section contains:
+
+```json
+"users": {
+    "iris": ["fred", "barney"]
+}
+```
+
+then Fred (or any other user in the `iris` group) would be authorised to log in as `fred` or `barney`.
 
 If Fred is not authorised through any of these methods, the module falls back to an LDAP lookup (if the **ldap** section is configured).  The LDAP query takes a configured filter and substitutes the *remote* username for a `%s` part of the filter, and queries a configured attribute.  There is also a filter\_local which, if filter is left out, will substitute the *local* username and run the query with that instead.
 
