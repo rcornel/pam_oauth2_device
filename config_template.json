@@ -47,6 +47,11 @@
         "provider_user_id_2":
         [
             "mike"
+        ],
+        "remote_group_name":
+        [
+            "local_user_1",
+            "local_user_2"
         ]
     }
 }

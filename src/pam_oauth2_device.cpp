@@ -418,7 +418,8 @@ bool is_authorized(Config const &config,
         }
     }
 
-    // Also try to authorize against local config using remote group membership
+    // Also try to authorize against local config using remote group membership.
+    // Groups are sorted and the usermap is a balanced tree; typical users have O(10) groups.
     for(auto const &group : userinfo.groups())
     {
         auto group_it = config.usermap.find(group);
